@@ -72,8 +72,8 @@ def dingwei(car_pic):
     # 增加白点数用于精准定位车牌位置
     img_opening = cv2.addWeighted(img, 1, opening, -1, 0)
     # 利用阀值把图片转换成二进制图片
-    # ret, img_thresh = cv2.threshold(img_opening, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    ret, img_thresh = cv2.threshold(img_opening, 0, 255, cv2.THRESH_OTSU)
+    ret, img_thresh = cv2.threshold(img_opening, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # ret, img_thresh = cv2.threshold(img_opening, 0, 255, cv2.THRESH_OTSU)
     # 找出图片边缘
     img_edge = cv2.Canny(img_thresh, 100, 200)
     # 使用开运算和闭运算让图像边缘成为一个整体img
@@ -86,9 +86,9 @@ def dingwei(car_pic):
     image, contours, hierarchy = cv2.findContours(img_edge2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = [cnt for cnt in contours if cv2.contourArea(cnt) > 1900]
     cv2.drawContours(img, contours, 0, (0, 0, 255), 3)
-    print(len(contours))
-    cv2.drawContours(img, contours, 1, (0, 0, 255), 3)
-    cv2.drawContours(img, contours, 2, (0, 0, 255), 3)
+    # print(len(contours))
+    # cv2.drawContours(img, contours, 1, (0, 0, 255), 3)
+    # cv2.drawContours(img, contours, 2, (0, 0, 255), 3)
     # rect = cv2.minAreaRect(contours[0])
     # print("alpha=%d" % rect[2])
     # box = cv2.boxPoints(rect)
@@ -236,7 +236,7 @@ def dingwei(car_pic):
         # cv2.waitKey(0)
         xl, xr, yh, yl = accurate_place(card_img_hsv, limit1, limit2, color)
         print("xl:{}, xr:{}, yh:{}, yl:{}".format(xl, xr, yh, yl))
-        print("row_num:{}, col_num:{}".format(row_num, col_num))
+        # print("row_num:{}, col_num:{}".format(row_num, col_num))
         if yl == yh and xl == xr:
             continue
         need_accurate = False
@@ -248,7 +248,7 @@ def dingwei(car_pic):
             xl = 0
             xr = col_num
             need_accurate = True
-        if (yh-yl) < row_num*0.7:
+        if abs(yh-yl) < row_num*0.7:
             yl = 0
             yh = row_num
         card_imgs[card_index] = card_img[yl:yh, xl:xr] if color != "green" or yl < (yh - yl) // 4 else card_img[
@@ -273,12 +273,12 @@ def dingwei(car_pic):
                                                                                                        yl - (
                                                                                                             yh - yl) // 4:yh,
                                                                                                     xl:xr]
-        # print(xl, xr, yh, yl)
+        print(xl, xr, yh, yl)
         # print(len(card_imgs))
         if limit1 != 0:
             cv2.imshow("card_img", card_imgs[card_index])
             print(xl, xr, yh, yl)
-            card1 = cv2.resize(card_imgs[card_index], (200, 50))
+            card1 = cv2.resize(card_imgs[card_index], (720, 180))
             cv2.imwrite("card_img_104_{}.jpg".format(card_index), card1)
             print(limit1)
             # cv2.imshow("oldimg{}".format(card_index), oldimg)
@@ -298,5 +298,5 @@ def dingwei(car_pic):
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 if __name__ == '__main__':
-    car_pic = "/home/python/Desktop/opencv_test/opencv_test1/test_pic/car39.jpg"
+    car_pic = "/home/python/Desktop/opencv_test/opencv_demo/pic/car21jinK88888.jpg"
     dingwei(car_pic)

@@ -135,8 +135,8 @@ class CardPredictor:
             chars_label = np.array(chars_label)
             print(chars_train.shape)
             self.model.train(chars_train, chars_label)
-        if os.path.exists("svmchinese.dat"):
-            self.modelchinese.load("svmchinese.dat")
+        if os.path.exists("svmchinese_duo.dat"):
+            self.modelchinese.load("svmchinese_duo.dat")
         else:
             chars_train = []
             chars_label = []
@@ -169,7 +169,7 @@ class CardPredictor:
 if __name__ == '__main__':
     c = CardPredictor()
     c.train_svm()
-    part_card = cv2.imread("/home/python/Desktop/opencv_test/opencv_test1/qiegezifu1_0.jpg", 0)
+    part_card = cv2.imread("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/qiegezifu1_0.jpg", 0)
     old_pic = part_card
     w = abs(part_card.shape[1] - SZ) // 2
     part_card = cv2.copyMakeBorder(part_card, 0, 0, w, w, cv2.BORDER_CONSTANT, value=[0, 0, 0])

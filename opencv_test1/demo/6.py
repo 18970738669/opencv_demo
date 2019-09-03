@@ -46,48 +46,46 @@ PROVINCES = ("京", "闽", "粤", "苏", "沪", "浙", "川", "鄂", "赣", "甘
 # cv2.imshow("gray_img", gray_img)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
-# for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_test1/train_shouxie/Validation"):
-#     print("root:{}\ndirs:{}\nfiles:{}".format(root, dirs, files))
-path = "/home/python/Desktop/opencv_test/opencv_test1/chinese_test/qiegezifulu_0.jpg"
-img = cv2.imread(path)
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-img = cv2.resize(img, (32, 40), interpolation=cv2.INTER_AREA)
-a = path.split(".")
-new_path = a[0] + ".bmp"
-cv2.imwrite(path, img)
-image = Image.open(path)
-new_pic = image.convert("L")
-new_pic.save(new_path)
-os.remove(path)
-print("图片{}修改格式成功".format(os.path.basename(path)))
+
+# path = "/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/chinese_test/jpg/car9zheF77777.jpg"
+# img = cv2.imread(path)
+# img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# img = cv2.resize(img, (32, 40), interpolation=cv2.INTER_AREA)
+# a = path.split(".")
+# new_path = a[0] + ".bmp"
+# cv2.imwrite(path, img)
+# image = Image.open(path)
+# new_pic = image.convert("L")
+# new_pic.save(new_path)
+# # os.remove(path)
+# print("图片{}修改格式成功".format(os.path.basename(path)))
 # cv2.imshow("img", img)
 # # os.remove("/home/python/Desktop/opencv_test/opencv_test1/test_pic/car1.jpg")
 # cv2.waitKey(0)
 
-
-# for root, dirs, files in os.walk("/home/python/Desktop/charsChinese1"):
+# tensorflow格式图片
+# for root, dirs, files in os.walk("/home/python/Desktop/charsChinese3"):
 #     if not os.path.basename(root).startswith("zh_"):
 #         continue
-#     if os.path.basename(root) in ["chinese-characters", "zh_jing", "zh_min", "zh_yue", "zh_su", "zh_hu", "zh_zhe"]:
+#     if os.path.basename(root) in ["charsChinese1"]:
 #         continue
 #     for j, filename in enumerate(files):
 #         filepath = os.path.join(root, filename)
-#         digit_img = Image.open(filepath)
-#         new_pic = digit_img.convert("L")
 #         a = filename.split(".")
 #         new_filename = a[0] + ".bmp"
 #         new_filepath = os.path.join(root, new_filename)
-#         new_pic.save(new_filepath)
-#         os.remove(filepath)
 #         digit_img = cv2.imread(filepath)
 #         img = cv2.resize(digit_img, (32, 40), interpolation=cv2.INTER_AREA)
+#         cv2.imwrite(new_filepath, img)
+#         digit_img = Image.open(new_filepath)
+#         new_pic = digit_img.convert("L")
+#         new_pic.save(new_filepath)
 #         os.remove(filepath)
-#         cv2.imwrite(filepath, img)
 #         print("改写完一张{}".format(filename))
 
 
-# img = cv2.imread("/home/python/Desktop/opencv_test/opencv_test1/train/charsChinese/zh_min/1140-0-9.jpg")
-# img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-# img = cv2.resize(img, (32, 40), interpolation=cv2.INTER_AREA)
-# cv2.imwrite("/home/python/Desktop/opencv_test/opencv_test1/qiegezifu1_.jpg", img)
+img = cv2.imread("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/chinese_test/jpg/car_100ganH3B386.jpg")
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+img = cv2.resize(img, (20, 20), interpolation=cv2.INTER_AREA)
+cv2.imwrite("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/chinese_test/jpg/car_100ganH3B386_1.jpg", img)
 

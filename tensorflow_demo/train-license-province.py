@@ -14,7 +14,7 @@ HEIGHT = 40
 NUM_CLASSES = 31
 iterations = 300
 
-SAVER_DIR = "train-saver-r/province/"
+SAVER_DIR = "train-saver-origin/province/"
 
 PROVINCES = ("京", "闽", "粤", "苏", "沪", "浙", "川", "鄂", "赣", "甘", "贵", "桂", "黑", "冀", "津", "吉", "辽", "鲁", "蒙"
              , "宁", "青", "琼", "陕", "晋", "皖", "湘", "新", "豫", "渝", "云", "藏")
@@ -45,7 +45,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第一次遍历图片目录是为了获取图片总数
     input_count = 0
     for i in range(0, NUM_CLASSES):
-        dir = '/home/python/Desktop/charsChinese2/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/home/python/Desktop/charsChinese3/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 input_count += 1
@@ -57,7 +57,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第二次遍历图片目录是为了生成图片数据和标签
     index = 0
     for i in range(0, NUM_CLASSES):
-        dir = '/home/python/Desktop/charsChinese2/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/home/python/Desktop/charsChinese3/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 filename = dir + filename
@@ -77,7 +77,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第一次遍历图片目录是为了获取图片总数
     val_count = 0
     for i in range(0, NUM_CLASSES):
-        dir = '/home/python/Desktop/opencv_test/tensorflow_demo/train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/home/python/Desktop/opencv_test/opencv_demo/tensorflow_demo/train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 val_count += 1
@@ -89,7 +89,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第二次遍历图片目录是为了生成图片数据和标签
     index = 0
     for i in range(0, NUM_CLASSES):
-        dir = '/home/python/Desktop/opencv_test/tensorflow_demo/train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/home/python/Desktop/opencv_test/opencv_demo/tensorflow_demo/train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 filename = dir + filename

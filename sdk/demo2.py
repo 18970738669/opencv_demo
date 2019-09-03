@@ -1,3 +1,5 @@
+import os
+
 from aip import AipOcr
 
 """ 你的 APPID AK SK """
@@ -25,3 +27,9 @@ print(client.basicAccurate(image))
 #
 # """ 带参数调用通用文字识别（高精度版） """
 # client.basicAccurate(image, options)
+
+# for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/chinese_test/jpg"):
+#     for file in files:
+#         img = get_file_content(root+"/"+file)
+#         print("{}识别结果为:".format(file))
+#         print(client.basicAccurate(img))

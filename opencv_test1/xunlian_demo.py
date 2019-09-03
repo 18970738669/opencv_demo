@@ -117,7 +117,7 @@ class CardPredictor:
             chars_train = []
             chars_label = []
 
-            for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_test1/train/chars2"):
+            for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/train/chars2"):
                 if len(os.path.basename(root)) > 1:
                     continue
                 root_int = ord(os.path.basename(root))
@@ -135,12 +135,12 @@ class CardPredictor:
             chars_label = np.array(chars_label)
             print(chars_train.shape)
             self.model.train(chars_train, chars_label)
-        if os.path.exists("svmchinese_duo.dat"):
-            self.modelchinese.load("svmchinese_duo.dat")
+        if os.path.exists("svmchinese.dat"):
+            self.modelchinese.load("svmchinese.dat")
         else:
             chars_train = []
             chars_label = []
-            for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_test1/train/charsChinese"):
+            for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/train/charsChinese"):
                 if not os.path.basename(root).startswith("zh_"):
                     continue
                 pinyin = os.path.basename(root)
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     c = CardPredictor()
     c.train_svm()
     list1 = []
-    for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_test1/train/chars2_test"):
+    for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/train/chars2_test"):
         if len(os.path.basename(root)) > 1:
             continue
         root1 = os.path.basename(root)
@@ -192,7 +192,7 @@ if __name__ == '__main__':
         list1.append((i+1-count)/(i+1)*100)
     print("-------字母数字总识别率为{:.2f}%".format(sum(list1)/len(list1)))
     list2 = []
-    for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_test1/train/charsChinese_test"):
+    for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/train/charsChinese"):
         if not os.path.basename(root).startswith("zh_"):
             continue
         pinyin = os.path.basename(root)

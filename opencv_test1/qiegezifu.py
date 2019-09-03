@@ -33,19 +33,25 @@ def seperate_card(img, waves):
 def qiege(car_pic):
     color_pic = cv2.imread(car_pic, 1)
     img = cv2.imread(car_pic, 1)
-    img = cv2.resize(img, (200, 50), interpolation=cv2.INTER_AREA)
+    # img = cv2.resize(img, (720, 180), interpolation=cv2.INTER_AREA)
     img1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, gray_img = cv2.threshold(img1, 0, 255, cv2.THRESH_OTSU)
+    blur = cv2.GaussianBlur(img1, (5, 5), 0)
+    ret3, gray_img = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    # img2 = cv2.resize(img_thre, (200, 50), interpolation=cv2.INTER_AREA)
+    # cv2.imshow("img", img)
+    # cv2.imshow("img_thre", img_thre)
+    # cv2.waitKey(0)
     # cv2.imshow("gray_img", gray_img)
     # cv2.waitKey(0)
     # print("gray_img{}".format(gray_img))
     x_histogram = np.sum(gray_img, axis=1)
     # print(x_histogram)
     x_min = np.min(x_histogram)
-    # print(x_histogram, x_min)
+    # print(x_min)
     x_average = np.sum(x_histogram) / x_histogram.shape[0]
     # print(x_average)
     x_threshold = (x_min + x_average) / 2
+    print("x_threshold:{}".format(x_threshold))
     wave_peaks = find_waves(x_threshold, x_histogram)
     # print(wave_peaks)
     print("wavex:{}".format(wave_peaks))
@@ -54,16 +60,15 @@ def qiege(car_pic):
     # 认为水平方向，最大的波峰为车牌区域
     wave = max(wave_peaks, key=lambda x: x[1] - x[0])
     # print("wave:{}".format(wave))
-    # gray_img = gray_img[wave[0]:wave[1]]
+    gray_img = gray_img[wave[0]:wave[1]]
     row_num, col_num = gray_img.shape[:2]
     # 去掉车牌上下边缘1个像素，避免白边影响阈值判断
     gray_img = gray_img[1:row_num - 1]
     y_histogram = np.sum(gray_img, axis=0)
-    # print(y_histogram)
     y_min = np.min(y_histogram)
     y_average = np.sum(y_histogram) / y_histogram.shape[0]
     y_threshold = (y_min + y_average) / 5
-
+    print("y_threshold:{}".format(y_threshold))
     wave_peaks = find_waves(y_threshold, y_histogram)
     print("wavey:{}".format(wave_peaks))
 
@@ -73,9 +78,14 @@ def qiege(car_pic):
     wave = max(wave_peaks, key=lambda x: x[1] - x[0])
     print("wave_max:{}".format(wave))
     max_wave_dis = wave[1] - wave[0]
+    if len(wave_peaks) >= 10:       # 含有汉字川的情况
+        if abs(wave_peaks[2][1] - wave_peaks[0][0] - max_wave_dis) <= 5:
+            new_wave = (wave_peaks[0][0], wave_peaks[2][1])
+            wave_peaks = wave_peaks[3:]
+            wave_peaks.insert(0, new_wave)
+            # print(wave_peaks)
     # 判断是否是左侧车牌边缘
-    if wave_peaks[0][1] - wave_peaks[0][0] < max_wave_dis / 3 and abs((wave_peaks[0][1] - wave_peaks[0][0] +
-                                                                       wave_peaks[1][1] - wave_peaks[1][0]) - max_wave_dis) > 4:
+    if wave_peaks[0][1] - wave_peaks[0][0] < max_wave_dis / 3 and wave_peaks[1][1] - wave_peaks[0][0]  > max_wave_dis:
         wave_peaks.pop(0)
     # 组合分离汉字
     cur_dis = 0
@@ -109,13 +119,13 @@ def qiege(car_pic):
 
     return part_cards, color_pic_cards
 
-part_cards, color_pic_cards = qiege("/home/python/Desktop/opencv_test/opencv_test1/card_img_104_0.jpg")
+part_cards, color_pic_cards = qiege("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/card_img_104_0.jpg")
 for i, part_card in enumerate(part_cards):
     if np.mean(part_card) < 255 / 5:
         print("a point")
         continue
-    if i == 0:
-        part_card = cv2.resize(part_card, (32, 40))
+    # if i == 0:
+    #     part_card = cv2.resize(part_card, (32, 40))
     part_card_old = part_card
     cv2.imwrite("qiegezifu1_{}.jpg".format(i), part_card)
     cv2.imshow("part_card2_{}".format(i), part_card)

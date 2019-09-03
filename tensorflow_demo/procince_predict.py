@@ -74,9 +74,9 @@ def full_connect(inputs, W, b):
 # 加载训练模型
 def province_test():
     saver_p = tf.train.import_meta_graph(
-        "/home/python/Desktop/opencv_test/tensorflow_demo/train-saver/province/model.ckpt.meta")
+        "/home/python/Desktop/opencv_test/opencv_demo/tensorflow_demo/train-saver/province/model.ckpt.meta")
     with tf.Session() as sess_p:
-        model_file = tf.train.latest_checkpoint("/home/python/Desktop/opencv_test/tensorflow_demo/train-saver/province")
+        model_file = tf.train.latest_checkpoint("/home/python/Desktop/opencv_test/opencv_demo/tensorflow_demo/train-saver/province")
         saver_p.restore(sess_p, model_file)
 
         # 第一个卷积层
@@ -113,14 +113,14 @@ def province_test():
         # 定义优化器和训练op
         conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
         list2 = []
-        # for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/tensorflow_demo/train_images/training-set/chinese-characters"):
-        #     # 此处是最上面那个将车牌信息处理剪切成单个字符
-        #     # 省份下标 1.temp  省份字母  2.tmp 根据上面剪切逻辑 依次类推
-        #     rt = os.path.basename(root)
-        #     if len(rt) > 3:
-        #         continue
-        #     right_val = PROVINCES[int(rt)]
-        #     list1 =[]
+        for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/tensorflow_demo/train_images/training-set/chinese-characters"):
+            # 此处是最上面那个将车牌信息处理剪切成单个字符
+            # 省份下标 1.temp  省份字母  2.tmp 根据上面剪切逻辑 依次类推
+            rt = os.path.basename(root)
+            if len(rt) > 3:
+                continue
+            right_val = PROVINCES[int(rt)]
+            list1 =[]
         #     for file in files:
         #         path = os.path.join(root, file)
         #         img = Image.open(path)
@@ -172,7 +172,7 @@ def province_test():
         #     list2.append((len(files)-len(list1))/len(files)*100)
         # print("-------------汉字总识别率为:{:.2f}%".format(sum(list2)/len(list2)))
 
-        img = Image.open("/home/python/Desktop/opencv_test/opencv_test1/chinese_test/qiegezifulu_0.bmp")
+        img = Image.open("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/chinese_test/bmp/car9zheF77777.bmp")
         width = img.size[0]
         height = img.size[1]
         img_data = [[0] * SIZE for i in range(1)]

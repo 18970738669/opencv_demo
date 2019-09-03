@@ -137,7 +137,7 @@ class SVM(StatModel):
 
 class CardPredictor:
     def __init__(self):
-        f = open('/home/python/Desktop/opencv_test/opencv_test1/config.js')
+        f = open('/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/config.js')
         j = json.load(f)
         for c in j["config"]:
             if c["open"]:
@@ -154,8 +154,8 @@ class CardPredictor:
         if os.path.exists("svm.dat"):
             self.model.load("svm.dat")
 
-        if os.path.exists("svmchinese_duo.dat"):
-            self.modelchinese.load("svmchinese_duo.dat")
+        if os.path.exists("svmchinese.dat"):
+            self.modelchinese.load("svmchinese.dat")
 
     def accurate_place(self, card_img_hsv, limit1, limit2, color):
         row_num, col_num = card_img_hsv.shape[:2]
@@ -203,10 +203,9 @@ class CardPredictor:
             img = cv2.resize(img, (MAX_WIDTH, int(pic_hight * resize_rate)), interpolation=cv2.INTER_AREA)
         # img = cv2.resize(img, (600, 450), interpolation=cv2.INTER_AREA)
         kernel = np.ones((20, 20), np.uint8)
-        blur = 3
         oldimg = img
         # 高斯去噪
-        img = cv2.GaussianBlur(img, (blur, blur), 0)  # 图片分辨率调整
+        img = cv2.GaussianBlur(img, (3, 3), 0)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # equ = cv2.equalizeHist(img)
         # img = np.hstack((img, equ))
@@ -366,8 +365,9 @@ class CardPredictor:
                 xl = 0
                 xr = col_num
                 need_accurate = True
-            if (yh - yl) < row_num * 0.2:
+            if (yh - yl) < row_num * 0.7:
                 yl = 0
+                yh = row_num
             # card_img1 = color_img[position[card_index][0]+yl:position[card_index][1],
             #             position[card_index][2]+xl:position[card_index][3]]
             # cv2.imshow("card_img1", card_img1)
@@ -376,7 +376,8 @@ class CardPredictor:
                                                                                                            yl - (
                                                                                                                 yh - yl) // 4:yh,
                                                                                                            xl:xr]
-            if need_accurate:  # 可能x或y方向未缩小，需要再试一次
+            # print(xl, xr, yh, yl)
+            if need_accurate:
                 card_img = card_imgs[card_index]
                 card_img_hsv = cv2.cvtColor(card_img, cv2.COLOR_BGR2HSV)
                 xl, xr, yh, yl = self.accurate_place(card_img_hsv, limit1, limit2, color)
@@ -396,6 +397,7 @@ class CardPredictor:
                                                                                                            yl - (
                                                                                                                 yh - yl) // 4:yh,
                                                                                                               xl:xr]
+            # print(xl, xr, yh, yl)
 
         # 以下为识别车牌中的字符
         predict_result = []
@@ -404,28 +406,29 @@ class CardPredictor:
         for i, color in enumerate(colors):
             if color in ("blue", "yello", "green"):
                 card_img = card_imgs[i]
-                card_img = cv2.resize(card_img, (200, 50), interpolation=cv2.INTER_AREA)
+                card_img1 = cv2.resize(card_img, (720, 180))
                 # print(card_img)
-                # cv2.imshow("card_img", card_img)
+                # print("___________________________________________")
+                # cv2.imshow("card_img1", card_img1)
                 # cv2.waitKey(0)
-                gray_img = cv2.cvtColor(card_img, cv2.COLOR_BGR2GRAY)
+                gray_img = cv2.cvtColor(card_img1, cv2.COLOR_BGR2GRAY)
                 # 黄、绿车牌字符比背景暗、与蓝车牌刚好相反，所以黄、绿车牌需要反向
-                if color == "green" or color == "yello":
-                    gray_img = cv2.bitwise_not(gray_img)
-                ret, gray_img = cv2.threshold(gray_img, 0, 255, cv2.THRESH_OTSU)
+                # if color == "green" or color == "yello":
+                #     gray_img = cv2.bitwise_not(gray_img)
+                blur = cv2.GaussianBlur(gray_img, (5, 5), 0)
+                ret3, gray_img = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                 # cv2.imshow("gray_img", gray_img)
                 # cv2.waitKey(0)
                 # print("gray_img{}".format(gray_img))
                 x_histogram = np.sum(gray_img, axis=1)
-                # print(x_histogram)
                 x_min = np.min(x_histogram)
-                # print(x_histogram, x_min)
+                # print("x_min{}".format(x_min))
                 x_average = np.sum(x_histogram) / x_histogram.shape[0]
-                # print(x_average)
                 x_threshold = (x_min + x_average) / 2
+                # print("x_threshold:{}".format(x_threshold))
                 wave_peaks = find_waves(x_threshold, x_histogram)
                 # print(wave_peaks)
-                # print("wavex:{}".format(wave_peaks))
+                print("wavex:{}".format(wave_peaks))
                 if len(wave_peaks) == 0:
                     print("peak less 0:")
                     continue
@@ -436,23 +439,27 @@ class CardPredictor:
                 row_num, col_num = gray_img.shape[:2]
                 gray_img = gray_img[1:row_num - 1]
                 y_histogram = np.sum(gray_img, axis=0)
-                # print(y_histogram)
                 y_min = np.min(y_histogram)
                 y_average = np.sum(y_histogram) / y_histogram.shape[0]
                 y_threshold = (y_min + y_average) / 5
+                # print("y_threshold:{}".format(y_threshold))
                 wave_peaks = find_waves(y_threshold, y_histogram)
-                # print("wavey:{}".format(wave_peaks))
+                print("wavey:{}".format(wave_peaks))
                 # 车牌字符数应大于6
                 if len(wave_peaks) <= 6:
                     print("peak less 1:", len(wave_peaks))
                     continue
                 wave = max(wave_peaks, key=lambda x: x[1] - x[0])
-                # print("wave_max:{}".format(wave))
+                print("wave_max:{}".format(wave))
                 max_wave_dis = wave[1] - wave[0]
+                if len(wave_peaks) >= 10:  # 含有汉字川的情况
+                    if abs(wave_peaks[2][1] - wave_peaks[0][0] - max_wave_dis) <= 5:
+                        new_wave = (wave_peaks[0][0], wave_peaks[2][1])
+                        wave_peaks = wave_peaks[3:]
+                        wave_peaks.insert(0, new_wave)
                 # 判断是否是左侧车牌边缘
-                if wave_peaks[0][1] - wave_peaks[0][0] < max_wave_dis / 3 and abs((wave_peaks[0][1] - wave_peaks[0][0] +
-                                                                                       wave_peaks[1][1] - wave_peaks[1][
-                    0]) - max_wave_dis) > 4:
+                if wave_peaks[0][1] - wave_peaks[0][0] < max_wave_dis / 3 and wave_peaks[1][1] - wave_peaks[0][
+                    0] > max_wave_dis:
                     wave_peaks.pop(0)
                 # 组合分离汉字
                 cur_dis = 0
@@ -479,7 +486,7 @@ class CardPredictor:
                     print("peak less 2:", len(wave_peaks))
                     continue
                 # print(wave_peaks)
-                # first_card = card_img[:, wave_peaks[0][0]:wave_peaks[6][1]]
+                # first_card = card_img[:, wave_peaks[0][0]:wave_peaks[0][1]]
                 # cv2.imwrite("chinese/test_card14.jpg", first_card)
                 # cv2.imshow("first_card", img)
                 # cv2.waitKey(0)
@@ -497,6 +504,9 @@ class CardPredictor:
                     part_card_old = part_card
                     w = abs(part_card.shape[1] - SZ) // 2
                     # if i == 0:
+                    #     chi_path = "/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/chinese_test/jpg/" + os.path.basename(
+                    #         card_pic)
+                    #     cv2.imwrite(chi_path, part_card)
                     #     cv2.imshow("part_card", part_card)
                     #     cv2.waitKey(0)
 
@@ -536,39 +546,39 @@ class CardPredictor:
                 break
         return predict_result, roi, card_color
 if __name__ == '__main__':
-    # c = CardPredictor()
-    # c.train_svm()
-    # r, roi, color = c.shibie("/home/python/Desktop/opencv_test/opencv_test1/test_pic/car39.jpg")
-    # # if len(r) == 7:
-    # #     print(r)
-    # #     cv2.imshow("car_pic", roi)
-    # #     cv2.waitKey(0)
-    # # else:
-    # #     print("无法识别")
-    # print(r)
-    # cv2.imshow("card_img", roi)
-    # cv2.waitKey(0)
-
-
-
-
     c = CardPredictor()
     c.train_svm()
-    for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/pic"):
-        count = 0
-        unshibie = []
-        for i, file in enumerate(files):
-            car_pic = os.path.join(root, file)
-            try:
-                r, roi, color = c.shibie(car_pic)
-            except:
-                unshibie.append(file)
-                continue
-            if len(r) == 7:
-                count += 1
-                print("成功识别{},结果为{}".format(file, r))
-            else:
-                unshibie.append(file)
-        print("识别率为:{:.2f}%".format(count/(i+1)*100))
-        print("没有识别的车牌有:{}".format(unshibie))
-        break
+    r, roi, color = c.shibie("/home/python/Desktop/opencv_test/opencv_demo/opencv_test1/test_pic/car35.jpg")
+    # if len(r) == 7:
+    #     print(r)
+    #     cv2.imshow("car_pic", roi)
+    #     cv2.waitKey(0)
+    # else:
+    #     print("无法识别")
+    print(r)
+    cv2.imshow("card_img", roi)
+    cv2.waitKey(0)
+
+
+
+
+    # c = CardPredictor()
+    # c.train_svm()
+    # for root, dirs, files in os.walk("/home/python/Desktop/opencv_test/opencv_demo/pic"):
+    #     count = 0
+    #     unshibie = []
+    #     for i, file in enumerate(files):
+    #         car_pic = os.path.join(root, file)
+    #         try:
+    #             r, roi, color = c.shibie(car_pic)
+    #         except:
+    #             unshibie.append(file)
+    #             continue
+    #         if len(r) == 7:
+    #             count += 1
+    #             print("成功识别{},结果为{}".format(file, r))
+    #         else:
+    #             unshibie.append(file)
+    #     print("识别率为:{:.2f}%".format(count/(i+1)*100))
+    #     print("没有识别的车牌有:{}".format(unshibie))
+    #     break
