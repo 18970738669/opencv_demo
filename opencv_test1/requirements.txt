@@ -1,5 +1,5 @@
 matplotlib==2.2.2
-numpy==1.14.2
+numpy==1.22.0
 pandas==0.20.3
 TA-Lib==0.4.16
 tables==3.4.2
